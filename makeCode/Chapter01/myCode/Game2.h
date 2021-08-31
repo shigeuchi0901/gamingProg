@@ -6,7 +6,7 @@
 #pragma once
 
 // SDLライブラリをインクルード
-#include "SDL/SDL.h"
+#include "SDL.h"
 
 class Game
 {
@@ -25,6 +25,11 @@ public:
 	void Shutdown();
 
 private:
+
+	// ゲームループのためのヘルパー関数群
+	void ProcessInput();
+	void UpdateGame();
+	void GenerateOutput();
 	
 	// SDLが作るウィンドウ
 	SDL_Window* mWindow;
@@ -32,14 +37,6 @@ private:
 	// ゲームの継続フラグ
 	bool mIsRunning;
 
+
+
 };
-
-Game::Game()
-{
-}
-
-Game::~Game()
-{
-}
-
-
