@@ -1,8 +1,11 @@
-// 自作：メイン
-// 2021/08/28
+// 自作プロジェクト
+// 2021/08/28：作成
+// 2021/09/06：SDL, SDL_image, openGL, RapidJson, EMOD導入
+// 2021/09/12：Chapter1.4.4開始
+// 
 
 
-#include "Game2.h"
+#include "Game.h"
 
 int main(int argc, char** argv)
 {

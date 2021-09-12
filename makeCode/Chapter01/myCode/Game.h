@@ -6,7 +6,7 @@
 #pragma once
 
 // SDLライブラリをインクルード
-#include "SDL.h"
+#include<SDL.h>
 
 class Game
 {
@@ -26,7 +26,7 @@ public:
 
 private:
 
-	// ゲームループのためのヘルパー関数群
+	//// ゲームループのためのヘルパー関数群
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();
