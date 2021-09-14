@@ -24,6 +24,7 @@ int main(int argc, char** argv)
 	// ƒQ[ƒ€I—¹ˆ—
 	game.Shutdown();
 
+	
 	return 0;
 }
 

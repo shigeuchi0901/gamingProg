@@ -83,6 +83,33 @@ void Game::Shutdown()
 // 入力処理
 void Game::ProcessInput()
 {
+	SDL_Event event;
+
+	// キューにイベントがあればtrueとなる
+	while (SDL_PollEvent(&event) )
+	{
+		// イベントの種類によって処理を分岐
+		switch (event.type)
+		{
+			// ウィンドウ[x]ボタンを押したとき、
+			case SDL_QUIT:
+				mIsRunning = false;		
+				break;
+
+
+		}
+	}
+
+	// キーボードの状態を取得（配列を取得）
+	const Uint8* state = SDL_GetKeyboardState(NULL);
+
+	// [ESC]キーを押していた場合
+	if (state[SDL_SCANCODE_ESCAPE])
+	{
+		mIsRunning = false;
+	}
+
+
 
 }
 void Game::UpdateGame()
