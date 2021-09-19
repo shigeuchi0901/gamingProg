@@ -3,6 +3,13 @@
 
 #include "Game.h"
 
+
+
+// グローバル変数
+
+const int thinkness = 15;
+const float paddle = 100.0f;
+
 // コンストラクタ-------------------------------
 Game::Game()
 		:mWindow(nullptr)
@@ -47,8 +54,21 @@ bool Game:: Initialize()
 	{
 		SDL_Log("Failed to create window: %s", SDL_GetError());
 		return false;
-	}
+	}	
 
+	// SDLレンダラーを作成する。　作成失敗時には false, 成功時にはtrueを返す
+	mRenderer = SDL_CreateRenderer(
+		mWindow,												// 作成するレンダラーの描画対象となるウィンドウ(のポインタ)
+		-1,														// 通常は -1　グラフィックスドライバを指定する。（複数のディスプレイに描画する際には -1以外を設定する必要がある。-1 ではSDLが任意で設定する。
+		SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC	// 初期化フラグ　
+	);
+
+	//SDL作成失敗時のエラー処理	
+	if (!mRenderer)
+	{
+		SDL_Log("Failed to create Renderer: %s", SDL_GetError());
+		return false;
+	}
 
 	// 正常終了した場合、trueを返す
 	return true;
@@ -62,6 +82,8 @@ void Game::RunLoop()
 	{
 		ProcessInput();
 		UpdateGame();
+
+		// 出力作成ヘルパー関数
 		GenerateOutput();
 	}
 
@@ -72,6 +94,10 @@ void Game::Shutdown()
 {
 	// ウィンドウを終了する
 	SDL_DestroyWindow(mWindow);
+
+	// レンダラーを終了する
+	SDL_DestroyRenderer(mRenderer);
+
 	// SDLを終了する
 	SDL_Quit();
 }
@@ -115,7 +141,65 @@ void Game::ProcessInput()
 void Game::UpdateGame()
 {
 }
+
+// 出力作成ヘルパー関数
 void Game::GenerateOutput() 
 {
+
+	// ゲームバッファを単色でクリアする
+	SDL_SetRenderDrawColor(
+		mRenderer,	// レンダラーのポインタ
+		0,			// R
+		0,			// G
+		255,		// B
+		255			// A （アルファ値、透明度）
+	);
+
+	// バックバッファを現在の描画色でクリアする
+	SDL_RenderClear(mRenderer);
+
+
+	// ゲームシーンの描画
+	
+	// 長方形を出力
+
+	// レンダラーの設定
+	SDL_SetRenderDrawColor(
+		mRenderer, 
+		255, 
+		255, 
+		255, 
+		255
+	);
+	
+	//長方形の描画指定
+	SDL_Rect wall
+	{
+		0,			// 左上隅の x
+		0,			// 左上隅の y
+		1024,		// 幅
+		thinkness	// 高さ
+	};
+
+	// 長方形を描画
+	SDL_RenderFillRect(mRenderer, &wall);
+
+	// ボールの位置を計算
+	mBallPoss.x = 500.0f;
+	mBallPoss.y = 100.0f;
+
+	// ボールの描画設定
+	SDL_Rect ball
+	{
+		static_cast<int>(mBallPoss.x - thinkness / 2),
+		static_cast<int>(mBallPoss.y - thinkness / 2),
+		thinkness,
+		thinkness
+	};
+
+	SDL_RenderFillRect(mRenderer, &ball);
+
+	// フロントバッファとバックバッファの交換
+	SDL_RenderPresent(mRenderer);
 
 }
