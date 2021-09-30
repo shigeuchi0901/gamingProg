@@ -7,7 +7,7 @@
 
 // グローバル変数
 	
-const int thinkness = 15;					//パドル、壁の厚さ
+const int thickness = 15;					//パドル、壁の厚さ
 const float paddleH = 100.0f;				//パドルの大きさ	
 
 const RGB paddleC = {50, 255, 50, 255};		//パドルの色
@@ -29,37 +29,6 @@ Game::Game()
 	, mTicksCount(0)
 	, mPaddleDir(0)
 {
-	// パドルの色
-	mPaddleColour.r = paddleC.r;
-	mPaddleColour.g = paddleC.g;
-	mPaddleColour.b = paddleC.b;
-	mPaddleColour.a = paddleC.a;
-
-	//壁の色
-	mWallColour.r = wallC.r;
-	mWallColour.g = wallC.g;
-	mWallColour.b = wallC.b;
-	mWallColour.a = wallC.a;
-
-	// ボールの色
-	mBallColour.r = ballC.r;
-	mBallColour.g = ballC.g;
-	mBallColour.b = ballC.b;
-	mBallColour.a = ballC.a;
-
-	// パドルの位置
-	mPaddlePos.x = static_cast<float> (0);
-	mPaddlePos.y = static_cast<float> (windowH / 2);
-
-	// ボールの位置
-	mBallPoss.x = static_cast<float> (windowW / 2);
-	mBallPoss.y = static_cast<float> (windowH / 2);
-
-	//ボールの速度
-	mBallVel = ballV;
-
-	//パドルの速度
-	mPaddleVel = paddleV;
 }
 
 // デストラクタ----------------------------------
@@ -114,6 +83,47 @@ bool Game:: Initialize()
 		SDL_Log("Failed to create Renderer: %s", SDL_GetError());
 		return false;
 	}
+
+	//****************************
+	// 各種メンバの初期化処理
+	//****************************
+
+	// パドルの色
+	mPaddleColour.r = paddleC.r;
+	mPaddleColour.g = paddleC.g;
+	mPaddleColour.b = paddleC.b;
+	mPaddleColour.a = paddleC.a;
+
+	//壁の色
+	mWallColour.r = wallC.r;
+	mWallColour.g = wallC.g;
+	mWallColour.b = wallC.b;
+	mWallColour.a = wallC.a;
+
+	// ボールの色
+	mBallColour.r = ballC.r;
+	mBallColour.g = ballC.g;
+	mBallColour.b = ballC.b;
+	mBallColour.a = ballC.a;
+
+	// パドルの位置
+	mPaddlePos.x = static_cast<float> (0);
+	mPaddlePos.y = static_cast<float> (windowH / 2);
+
+	//右側のパドルの位置
+	mPaddlePos2.x = static_cast<float> (windowW - thickness);
+	mPaddlePos2.y = static_cast<float> (windowH / 2);
+
+	// ボールの位置
+	mBallPoss.x = static_cast<float> (windowW / 2);
+	mBallPoss.y = static_cast<float> (windowH / 2);
+
+	//ボールの速度
+	mBallVel = ballV;
+	//パドルの速度
+	mPaddleVel = paddleV;
+
+
 
 	// 正常終了した場合、trueを返す
 	return true;
@@ -198,6 +208,21 @@ void Game::ProcessInput()
 		mPaddleDir = 1;
 	}
 
+
+	// 右側のパドルの位置変更処理（キーボードK,Iの入力に対する処理）
+	mPaddleDir2 = 0;
+
+	// Iが押されていた場合、フラグをパドルを上げる-1に
+	if (state[SDL_SCANCODE_I])
+	{
+		mPaddleDir2 = -1;
+	}
+	// Kが押されていた場合、フラグをパドルを下げる1に
+	else if (state[SDL_SCANCODE_K])
+	{
+		mPaddleDir2 = 1;
+	}
+
 	////上下キーでパドルとボールの速度を倍速化可能に
 	//if (state[SDL_SCANCODE_UP])
 	//{
@@ -237,6 +262,8 @@ void Game::UpdateGame()
 	// キーボード入力がある場合のパドルの移動処理
 	if (mPaddleDir != 0)
 	{
+
+		//左側のパドルの処理
 		mPaddlePos.y += mPaddleDir * mPaddleVel * deltatime;
 
 		//パドルが画面外に出ないように補正する
@@ -247,31 +274,52 @@ void Game::UpdateGame()
 			mPaddlePos.y = windowH - paddleH / 2.0f;
 		}
 		// 上にオーバーする場合。
-		else if(mPaddlePos.y < (paddleH / 2.0f  + thinkness) )
+		else if(mPaddlePos.y < (paddleH / 2.0f  + thickness) )
 		{
-			mPaddlePos.y = paddleH / 2.0f + thinkness;
+			mPaddlePos.y = paddleH / 2.0f + thickness;
+		}
+
+	}
+
+	if (mPaddleDir2 != 0)
+	{
+
+		//右側のパドルの処理
+		mPaddlePos2.y += mPaddleDir2 * mPaddleVel * deltatime;
+
+		//パドルが画面外に出ないように補正する
+
+		//下にオーバーする場合
+		if (mPaddlePos2.y > (windowH - paddleH / 2.0f))
+		{
+			mPaddlePos2.y = windowH - paddleH / 2.0f;
+		}
+		// 上にオーバーする場合。
+		else if (mPaddlePos2.y < (paddleH / 2.0f + thickness))
+		{
+			mPaddlePos2.y = paddleH / 2.0f + thickness;
 		}
 	}
 
 	//ボールの反射動作---------------------------------
 	
 	// 上の壁に触れた場合
-	if (mBallPoss.y <= thinkness && mBallVel.y < 0.0f)
+	if (mBallPoss.y <= thickness && mBallVel.y < 0.0f)
 	{
 		mBallVel.y *= -1;
 	}
 
 	//下の壁
-	if (mBallPoss.y >= windowH - thinkness && mBallVel.y > 0.0f)
+	if (mBallPoss.y >= windowH - thickness && mBallVel.y > 0.0f)
 	{
 		mBallVel.y *= -1;
 	}
 
-	//右の壁
-	if(mBallPoss.x >= windowW - thinkness && mBallVel.x > 0.0f)
-	{
-		mBallVel.x *= -1;
-	}
+	////右の壁→ばドルに変更
+	//if(mBallPoss.x >= windowW - thickness && mBallVel.x > 0.0f)
+	//{
+	//	mBallVel.x *= -1;
+	//}
 
 	//パドルの中央とボールの中心のy座標の差分を取得
 	float diff = mPaddlePos.y - mBallPoss.y;
@@ -283,9 +331,27 @@ void Game::UpdateGame()
 		//ボールがパドルの範囲内にあり、
 		diff <= paddleH / 2.0f &&
 		//パドルにボールが隣接し、
-		mBallPoss.x - thinkness / 2.0f <= mPaddlePos.x + thinkness &&
+		mBallPoss.x - thickness / 2.0f <= mPaddlePos.x + thickness &&
 		//ボールが左に進んでいる場合
 		mBallVel.x < 0.0f )
+	{
+		mBallVel.x *= -1.0f;
+	}
+
+
+	//右側のパドルの中央とボールの中心のy座標の差分を取得
+	 diff = mPaddlePos2.y - mBallPoss.y;
+	//絶対値を計算
+	diff = (diff > 0.0f) ? diff : -diff;
+
+	//パドルに触れた時
+	if (
+		//ボールがパドルの範囲内にあり、
+		diff <= paddleH / 2.0f &&
+		//パドルにボールが隣接し、
+		mBallPoss.x + thickness / 2.0f >= mPaddlePos2.x &&
+		//ボールが左に進んでいる場合
+		mBallVel.x > 0.0f)
 	{
 		mBallVel.x *= -1.0f;
 	}
@@ -340,7 +406,7 @@ void Game::GenerateOutput()
 		0,			// 左上隅の x
 		0,			// 左上隅の y
 		windowW,		// 横幅
-		thinkness	// 高さ
+		thickness	// 高さ
 	};
 
 	// 描画
@@ -348,31 +414,39 @@ void Game::GenerateOutput()
 
 	// 下部の壁の設定
 	wall.x = 0;
-	wall.y = windowH - thinkness;
+	wall.y = windowH - thickness;
 	wall.w = windowW;
-	wall.h = thinkness;
+	wall.h = thickness;
 
 	// 描画
 	SDL_RenderFillRect(mRenderer, &wall);
 
-	// 右部の壁の設定
-	wall.x = windowW - thinkness;
-	wall.y =0;
-	wall.w = thinkness;
-	wall.h = windowH;
+	//// 右部の壁の設定　パドルに変更
+	//wall.x = windowW - thickness;
+	//wall.y =0;
+	//wall.w = thickness;
+	//wall.h = windowH;
 
-	// 描画
-	SDL_RenderFillRect(mRenderer, &wall);
+	//// 描画
+	//SDL_RenderFillRect(mRenderer, &wall);
 
 	// 左部パドルの設定
 	wall.x = mPaddlePos.x;
 	wall.y = mPaddlePos.y - (paddleH / 2);
-	wall.w = thinkness;
+	wall.w = thickness;
 	wall.h = paddleH;
 
 	// 描画
 	SDL_RenderFillRect(mRenderer, &wall);
 
+	// 右側のパドルの設定
+	wall.x = mPaddlePos2.x;
+	wall.y = mPaddlePos2.y - (paddleH / 2);
+	wall.w = thickness;
+	wall.h = paddleH;
+
+	// 描画
+	SDL_RenderFillRect(mRenderer, &wall);
 
 	// レンダラーの設定(ボール用)
 	SDL_SetRenderDrawColor(
@@ -385,10 +459,10 @@ void Game::GenerateOutput()
 	// ボールの描画設定
 	SDL_Rect ball
 	{
-		static_cast<int>(mBallPoss.x - thinkness / 2),
-		static_cast<int>(mBallPoss.y - thinkness / 2),
-		thinkness,
-		thinkness
+		static_cast<int>(mBallPoss.x - thickness / 2),
+		static_cast<int>(mBallPoss.y - thickness / 2),
+		thickness,
+		thickness
 	};
 
 	SDL_RenderFillRect(mRenderer, &ball);
