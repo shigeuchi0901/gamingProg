@@ -1,10 +1,11 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: 中間ディレクトリ (Debug\) に別のプロジェクト (Project1.vcxproj) と共有されているファイルが含まれています。これにより、クリーンしてリビルド動作が適切に行われない可能性があります。
   Game.cpp
-C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(434,21): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(435,24): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(11,23): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(443,22): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(444,25): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(148,15): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(538,21): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(539,24): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(13,23): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(547,22): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\shige\gamingProg\makeCode\Chapter01\myCode\Game.cpp(548,25): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
   Project1.vcxproj -> C:\Users\shige\gamingProg\makeCode\Project1\Debug\MyGammingProg.exe
   C:\SDL2-2.0.16\lib\x86\SDL2.dll
   1 個のファイルをコピーしました

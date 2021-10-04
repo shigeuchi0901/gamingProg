@@ -7,6 +7,8 @@
 
 // SDLライブラリをインクルード
 #include<SDL.h>
+#include<vector>
+
 // ******************************************
 // 構造体宣言
 // ******************************************
@@ -25,6 +27,12 @@ struct RGB
 	Uint8 g;
 	Uint8 b;
 	Uint8 a;
+};
+
+struct Ball
+{
+	Vector2 position;
+	Vector2 velocity;
 };
 
 
@@ -68,8 +76,8 @@ private:
 	// パドルの位置
 	Vector2 mPaddlePos;
 
-	// ボールの位置
-	Vector2 mBallPoss;
+	//// ボールの位置
+	//Vector2 mBallPoss;
 
 	// 直前の時間記録用バッファ
 	Uint32 mTicksCount;
@@ -88,8 +96,8 @@ private:
 
 
 
-	//ボールの速度
-	Vector2 mBallVel;
+	////ボールの速度
+	//Vector2 mBallVel;
 
 	//パドルの速度
 	float mPaddleVel;
@@ -103,6 +111,10 @@ private:
 
 	//右側のパドル位置変更用メンバ
 	int mPaddleDir2;
+
+	//**********************************************
+	// ボール用動的配列
+	std::vector<Ball> mBalls;
 
 
 };

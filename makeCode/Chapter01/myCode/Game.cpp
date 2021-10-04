@@ -3,6 +3,8 @@
 
 #include "Game.h"
 
+#include<random>
+#include<math.h>
 
 
 // グローバル変数
@@ -17,8 +19,12 @@ const RGB ballC = {255, 250, 250, 255 };	//ボールの色
 const int windowW = 1024;					//ウィンドウ横幅
 const int windowH = 768;					//ウィンドウ縦幅
 
-const Vector2 ballV = { -200.0f, 235.0f };	//ボールの初期速度
-const float paddleV = 300.0f;				//パドルの初期速度
+//const Vector2 ballV = { -200.0f, 235.0f };	//ボールの初期速度
+const float paddleV = 500.0f;					//パドルの初期速度
+
+const float ballS = 300.0f;						//ボールの速度（スカラー）
+
+const int ballNum = 3;							//ボールの個数
 
 
 // コンストラクタ-------------------------------
@@ -114,15 +120,44 @@ bool Game:: Initialize()
 	mPaddlePos2.x = static_cast<float> (windowW - thickness);
 	mPaddlePos2.y = static_cast<float> (windowH / 2);
 
-	// ボールの位置
-	mBallPoss.x = static_cast<float> (windowW / 2);
-	mBallPoss.y = static_cast<float> (windowH / 2);
+	//// ボールの位置
+	//mBallPoss.x = static_cast<float> (windowW / 2);
+	//mBallPoss.y = static_cast<float> (windowH / 2);
 
-	//ボールの速度
-	mBallVel = ballV;
+	////ボールの速度
+	//mBallVel = ballV;
 	//パドルの速度
 	mPaddleVel = paddleV;
 
+
+	//****************************************************
+	// 複数ボールの初期位置と速度設定
+	//****************************************************
+
+	//乱数生成器の作成
+	std::mt19937_64 mt64(0);	//メルセンヌ・ツイスタ(64bit)
+
+	// [0.0, 1.0) の一様分布実数生成器
+	std::uniform_real_distribution<float> get_rand_uni_real(0.0, 1.0);
+
+	// ボールの初期位置と
+	for (int i = 1; i <= ballNum; i++)
+	{
+		Ball lBall;
+
+		float angle = 2.0f *  M_PI * (get_rand_uni_real(mt64) );
+
+		//mBallPoss.x = static_cast<float> (windowW / 2);
+		//mBallPoss.y = static_cast<float> (windowH / 2);
+
+		lBall.position.x = static_cast<float> (windowW / 2);
+		lBall.position.y = static_cast<float> (windowH / 2);
+
+		lBall.velocity.x = ballS * cosf(angle) * get_rand_uni_real(mt64);
+		lBall.velocity.y = ballS * sinf(angle) * get_rand_uni_real(mt64);
+
+		mBalls.push_back(lBall);
+	}
 
 
 	// 正常終了した場合、trueを返す
@@ -303,70 +338,139 @@ void Game::UpdateGame()
 
 	//ボールの反射動作---------------------------------
 	
-	// 上の壁に触れた場合
-	if (mBallPoss.y <= thickness && mBallVel.y < 0.0f)
-	{
-		mBallVel.y *= -1;
-	}
-
-	//下の壁
-	if (mBallPoss.y >= windowH - thickness && mBallVel.y > 0.0f)
-	{
-		mBallVel.y *= -1;
-	}
-
-	////右の壁→ばドルに変更
-	//if(mBallPoss.x >= windowW - thickness && mBallVel.x > 0.0f)
+	//// 上の壁に触れた場合
+	//if (mBallPoss.y <= thickness && mBallVel.y < 0.0f)
 	//{
-	//	mBallVel.x *= -1;
+	//	mBallVel.y *= -1;
 	//}
 
-	//パドルの中央とボールの中心のy座標の差分を取得
-	float diff = mPaddlePos.y - mBallPoss.y;
-	//絶対値を計算
-	diff = (diff > 0.0f) ? diff : -diff;
+	////下の壁
+	//if (mBallPoss.y >= windowH - thickness && mBallVel.y > 0.0f)
+	//{
+	//	mBallVel.y *= -1;
+	//}
+
+	//////右の壁→ばドルに変更
+	////if(mBallPoss.x >= windowW - thickness && mBallVel.x > 0.0f)
+	////{
+	////	mBallVel.x *= -1;
+	////}
+
+	////パドルの中央とボールの中心のy座標の差分を取得
+	//float diff = mPaddlePos.y - mBallPoss.y;
+	////絶対値を計算
+	//diff = (diff > 0.0f) ? diff : -diff;
+	//
+	////パドルに触れた時
+	//if (
+	//	//ボールがパドルの範囲内にあり、
+	//	diff <= paddleH / 2.0f &&
+	//	//パドルにボールが隣接し、
+	//	mBallPoss.x - thickness / 2.0f <= mPaddlePos.x + thickness &&
+	//	//ボールが左に進んでいる場合
+	//	mBallVel.x < 0.0f )
+	//{
+	//	mBallVel.x *= -1.0f;
+	//}
+
+
+	////右側のパドルの中央とボールの中心のy座標の差分を取得
+	// diff = mPaddlePos2.y - mBallPoss.y;
+	////絶対値を計算
+	//diff = (diff > 0.0f) ? diff : -diff;
+
+	////パドルに触れた時
+	//if (
+	//	//ボールがパドルの範囲内にあり、
+	//	diff <= paddleH / 2.0f &&
+	//	//パドルにボールが隣接し、
+	//	mBallPoss.x + thickness / 2.0f >= mPaddlePos2.x &&
+	//	//ボールが左に進んでいる場合
+	//	mBallVel.x > 0.0f)
+	//{
+	//	mBallVel.x *= -1.0f;
+	//}
+
+	//// ボールの位置の更新
+	//mBallPoss.x += mBallVel.x * deltatime;
+	//mBallPoss.y += mBallVel.y * deltatime;
+
+
+	//// ボールが範囲外に出た場合、ゲームループを終了する
+	//if (mBallPoss.x < 0.0f || mBallPoss.x > windowW ||
+	//	mBallPoss.y < 0.0f || mBallPoss.y > windowH)
+	//{
+	//	mIsRunning = false;
+	//}
+
+	//***********************************************
+	//複数ボールの反射処理
+	//***********************************************
 	
-	//パドルに触れた時
-	if (
-		//ボールがパドルの範囲内にあり、
-		diff <= paddleH / 2.0f &&
-		//パドルにボールが隣接し、
-		mBallPoss.x - thickness / 2.0f <= mPaddlePos.x + thickness &&
-		//ボールが左に進んでいる場合
-		mBallVel.x < 0.0f )
+	for (auto& ball : mBalls)
 	{
-		mBallVel.x *= -1.0f;
+		// 上の壁に触れた場合
+		if (ball.position.y <= thickness && ball.velocity.y < 0.0f)
+		{
+			ball.velocity.y *= -1;
+		}
+		//下の壁
+		if (ball.position.y >= windowH - thickness && ball.velocity.y > 0.0f)
+		{
+			ball.velocity.y *= -1;
+		}
+
+		//パドルの中央とボールの中心のy座標の差分を取得
+		float diff = mPaddlePos.y - ball.position.y;
+		//絶対値を計算
+		diff = (diff > 0.0f) ? diff : -diff;
+
+		//パドルに触れた時
+		if (
+			//ボールがパドルの範囲内にあり、
+			diff <= paddleH / 2.0f &&
+			//パドルにボールが隣接し、
+			ball.position.x - thickness / 2.0f <= mPaddlePos.x + thickness &&
+			//ボールが左に進んでいる場合
+			ball.velocity.x < 0.0f)
+		{
+			ball.velocity.x *= -1.0f;
+		}
+
+
+		//右側のパドルの中央とボールの中心のy座標の差分を取得
+		diff = mPaddlePos2.y - ball.position.y;
+		//絶対値を計算
+		diff = (diff > 0.0f) ? diff : -diff;
+
+		//パドルに触れた時
+		if (
+			//ボールがパドルの範囲内にあり、
+			diff <= paddleH / 2.0f &&
+			//パドルにボールが隣接し、
+			ball.position.x + thickness / 2.0f >= mPaddlePos2.x &&
+			//ボールが左に進んでいる場合
+			ball.velocity.x > 0.0f)
+		{
+			ball.velocity.x *= -1.0f;
+		}
+
+		// ボールの位置の更新
+		ball.position.x += ball.velocity.x * deltatime;
+		ball.position.y += ball.velocity.y * deltatime;
+
+
+		// ボールが範囲外に出た場合、ゲームループを終了する
+		if (ball.position.x < 0.0f || ball.position.x > windowW ||
+			ball.position.y < 0.0f || ball.position.y > windowH)
+		{
+			mIsRunning = false;
+		}
+
 	}
 
 
-	//右側のパドルの中央とボールの中心のy座標の差分を取得
-	 diff = mPaddlePos2.y - mBallPoss.y;
-	//絶対値を計算
-	diff = (diff > 0.0f) ? diff : -diff;
 
-	//パドルに触れた時
-	if (
-		//ボールがパドルの範囲内にあり、
-		diff <= paddleH / 2.0f &&
-		//パドルにボールが隣接し、
-		mBallPoss.x + thickness / 2.0f >= mPaddlePos2.x &&
-		//ボールが左に進んでいる場合
-		mBallVel.x > 0.0f)
-	{
-		mBallVel.x *= -1.0f;
-	}
-
-	// ボールの位置の更新
-	mBallPoss.x += mBallVel.x * deltatime;
-	mBallPoss.y += mBallVel.y * deltatime;
-
-
-	// ボールが範囲外に出た場合、ゲームループを終了する
-	if (mBallPoss.x < 0.0f || mBallPoss.x > windowW ||
-		mBallPoss.y < 0.0f || mBallPoss.y > windowH)
-	{
-		mIsRunning = false;
-	}
 
 }
 //********************************************************************************
@@ -456,16 +560,32 @@ void Game::GenerateOutput()
 		mBallColour.b,
 		mBallColour.a
 	);
-	// ボールの描画設定
-	SDL_Rect ball
-	{
-		static_cast<int>(mBallPoss.x - thickness / 2),
-		static_cast<int>(mBallPoss.y - thickness / 2),
-		thickness,
-		thickness
-	};
+	//// ボールの描画設定
+	//SDL_Rect ball
+	//{
+	//	static_cast<int>(mBallPoss.x - thickness / 2),
+	//	static_cast<int>(mBallPoss.y - thickness / 2),
+	//	thickness,
+	//	thickness
+	//};
+	//SDL_RenderFillRect(mRenderer, &ball);
 
-	SDL_RenderFillRect(mRenderer, &ball);
+	//******************************************
+	//複数ボールの描画処理
+	//******************************************
+
+
+	for (const auto ball : mBalls)
+	{
+		SDL_Rect ballRect
+		{
+			static_cast<int>(ball.position.x - thickness / 2),
+			static_cast<int>(ball.position.y - thickness / 2),
+			thickness,
+			thickness
+		};
+		SDL_RenderFillRect(mRenderer, &ballRect);
+	}
 
 	// フロントバッファとバックバッファの交換
 	SDL_RenderPresent(mRenderer);
